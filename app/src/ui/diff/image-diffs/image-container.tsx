@@ -3,6 +3,12 @@ import * as React from 'react'
 import { Image } from '../../../models/diff'
 import { convertDDSImage } from './dds-converter'
 
+/**
+ * This number is technically arbitrary, but images larger than this tend to
+ * look worse pixelated than smoothened out.
+ */
+const ImagePixelationThreshold = 64
+
 interface IImageProps {
   /** The image contents to render */
   readonly image: Image
@@ -44,6 +50,26 @@ export class ImageContainer extends React.Component<IImageProps, IImageState> {
     }
   }
 
+  private isDimensionPixelated(
+    dim: React.CSSProperties['maxWidth'] | React.CSSProperties['maxHeight']
+  ): boolean {
+    return dim !== undefined && Number(dim) <= ImagePixelationThreshold
+  }
+
+  private getImageRenderingMethod(): 'pixelated' | 'auto' {
+    if (!this.props.style) {
+      return 'auto'
+    }
+    const { maxWidth, maxHeight } = this.props.style
+    if (
+      this.isDimensionPixelated(maxHeight) ||
+      this.isDimensionPixelated(maxWidth)
+    ) {
+      return 'pixelated'
+    }
+    return 'auto'
+  }
+
   public componentDidMount() {
     const { image } = this.props
     this.loadImage(image)
@@ -68,9 +94,12 @@ export class ImageContainer extends React.Component<IImageProps, IImageState> {
       <div className="image-wrapper">
         <img
           src={imageSource}
-          style={this.props.style}
-          onLoad={this.onLoad}
           alt=""
+          onLoad={this.onLoad}
+          style={{
+            ...this.props.style,
+            imageRendering: this.getImageRenderingMethod(),
+          }}
         />
       </div>
     )

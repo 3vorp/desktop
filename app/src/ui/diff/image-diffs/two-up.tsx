@@ -39,6 +39,10 @@ export class TwoUp extends React.Component<ITwoUpProps, {}> {
             <ImageContainer
               image={previous}
               onElementLoad={this.props.onPreviousImageLoad}
+              style={{
+                maxWidth: previousImageSize.width,
+                maxHeight: previousImageSize.height,
+              }}
             />
 
             <div className="image-diff-footer">
@@ -54,6 +58,10 @@ export class TwoUp extends React.Component<ITwoUpProps, {}> {
             <ImageContainer
               image={current}
               onElementLoad={this.props.onCurrentImageLoad}
+              style={{
+                maxWidth: currentImageSize.width,
+                maxHeight: currentImageSize.height,
+              }}
             />
 
             <div className="image-diff-footer">
